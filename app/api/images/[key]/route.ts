@@ -1,0 +1,2 @@
+import {bucket} from "@/lib/storage";
+export async function GET(_r:Request,{params}:{params:Promise<{key:string}>}){const {key}=await params;if(!/^[a-f0-9-]+\.(png|jpg|webp)$/.test(key))return new Response(null,{status:404});try{const object=await bucket().get(key);if(!object)return new Response(null,{status:404});return new Response(object.body,{headers:{"Content-Type":object.httpMetadata?.contentType??"application/octet-stream","X-Content-Type-Options":"nosniff","Cache-Control":"public,max-age=86400"}})}catch{return new Response(null,{status:503})}}

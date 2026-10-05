@@ -1,0 +1,6 @@
+"use client";
+import {useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+export default function Contact(){const [notice,setNotice]=useState("");const [busy,setBusy]=useState(false);return <form onSubmit={async e=>{e.preventDefault();const form=e.currentTarget;setBusy(true);setNotice("");try{const r=await fetch("/api/enquiries",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(Object.fromEntries(new FormData(form)))});if(!r.ok)throw Error();setNotice("Thank you. Your enquiry has been received.");form.reset()}catch{setNotice("Your enquiry could not be sent. Please try again; your message is still here.")}finally{setBusy(false)}}}><label>Your name<Input name="name" required maxLength={100} autoComplete="name"/></label><label>Email address<Input name="email" type="email" required maxLength={254} autoComplete="email"/></label><label>Tell us about your project<Textarea name="message" required minLength={10} maxLength={5000} rows={4}/></label><p className="fine">Your details will only be used to respond to your enquiry.</p><Button className="cta" disabled={busy}>{busy?"Sending…":"Send enquiry"}</Button><p role="status">{notice}</p></form>}

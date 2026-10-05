@@ -1,0 +1,3 @@
+import {isEditor} from "@/lib/editor-auth";import {chatGPTSignInPath,getChatGPTUser} from "@/app/chatgpt-auth";import Editor from "./editor";
+export const dynamic="force-dynamic";
+export default async function Studio(){const allowed=await isEditor();const user=await getChatGPTUser();return <main className="studio"><a className="wordmark" href="/">Ontwrp<span>.</span></a><h1>Studio<span>.</span></h1>{allowed?<Editor/>:<><p>This editing area is restricted to the Ontwrp owner.</p>{!user?<a className="cta" href={chatGPTSignInPath("/studio")} target="_top">Sign in with ChatGPT</a>:<p className="notice">Your account does not have editing access yet. Ask to configure the owner’s sign-in email.</p>}</>}</main>}

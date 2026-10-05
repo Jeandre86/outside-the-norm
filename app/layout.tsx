@@ -1,0 +1,1 @@
+import type {Metadata} from "next";import "./globals.css";export const metadata:Metadata={title:"Ontwrp — Designs that last",description:"Brand identity, logo design, and website and app design by Ontwrp.",icons:{icon:"/favicon.svg"}};export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body>{children}</body></html>}
