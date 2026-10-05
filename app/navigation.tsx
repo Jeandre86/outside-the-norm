@@ -23,20 +23,16 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
     const section = document.getElementById(href.slice(1));
     if (!section) return;
     cancelScroll.current?.();
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // Transfer keyboard focus without causing an instant jump before the scroll.
+    // Prepare the focus target; focus it only after the scroll finishes.
     if (!section.hasAttribute("tabindex")) {
       section.setAttribute("tabindex", "-1");
       section.addEventListener("blur", () => section.removeAttribute("tabindex"), { once: true });
     }
-    section.focus({ preventScroll: true });
     const start = window.scrollY;
     const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
     const end = Math.max(0, Math.min(start + section.getBoundingClientRect().top - padding,
       document.documentElement.scrollHeight - window.innerHeight));
-    if (reducedMotion) {
-      window.scrollTo({ top: end, behavior: "instant" });
-    } else {
+    {
       // Explicit easing keeps section navigation consistent across browsers.
       let frame = 0;
       const began = performance.now();
@@ -57,11 +53,15 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
         const eased = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
         window.scrollTo({ top: start + (end - start) * eased, behavior: "instant" });
         if (progress < 1) frame = requestAnimationFrame(step);
-        else cancel();
+        else {
+          cancel();
+          section.focus({ preventScroll: true });
+          // Update the URL only after the animation so router updates cannot interrupt it.
+          if (window.location.hash !== href) window.history.pushState(window.history.state, "", href);
+        }
       };
       frame = requestAnimationFrame(step);
     }
-    if (window.location.hash !== href) window.history.pushState(window.history.state, "", href);
   }
 
   function navigate(event: MouseEvent<HTMLAnchorElement>, href: string, mobile = false) {
