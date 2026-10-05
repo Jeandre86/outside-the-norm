@@ -12,7 +12,7 @@ export const worldGreatestGameSample:Partial<Project>={
  outcome:"What the identity is intended to achieve\n\nThe proposed result is a brand that feels coherent, distinctive, and easy to recognise across different contexts. This is a design intention, not a measured project result.\n\nClient feedback, approved work, and any verified outcomes will replace this section before the case study is presented as a finished account.",
  caseLayout:{layout:"editorial",galleryLayout:"interleaved",sectionOrder:["challenge","role","research","process","solution","deliverables","outcome"]}
 };
-export function applySampleWhenEmpty(project:Project):Project{
+export function applyWorldGreatestGameSample(project:Project):Project{
  const hasStory=[project.challenge,project.role,project.research,project.process,project.solution,project.deliverables,project.outcome].some(text=>text?.trim());
  if(project.id!=="world-greatest-game"||project.sampleContent!==undefined||hasStory)return project;
  return {...project,...worldGreatestGameSample,description:project.description||worldGreatestGameSample.description||"",headline:project.headline||worldGreatestGameSample.headline,caseLayout:project.caseLayout||worldGreatestGameSample.caseLayout};

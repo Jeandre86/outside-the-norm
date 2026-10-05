@@ -1,4 +1,4 @@
-import {applySampleWhenEmpty} from "./world-greatest-game-sample";
+import {applySampleWhenEmpty} from "./case-study-samples";
 import {env} from "cloudflare:workers";
 import {defaults,type Project} from "./content";
 export function database(){const db=(env as unknown as {DB:D1Database}).DB;if(!db)throw Error("Database unavailable");return db}
