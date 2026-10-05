@@ -1,0 +1,1 @@
+export default function ProjectNotFound(){return <main className="section"><p className="eyebrow">PROJECT NOT FOUND</p><h1>This project isn’t available.</h1><a className="back-link" href="/work">Back to all work</a></main>}

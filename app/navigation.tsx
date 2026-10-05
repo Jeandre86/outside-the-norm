@@ -12,7 +12,8 @@ const links = [
   ["Contact", "#contact"],
 ];
 
-export default function Navigation() {
+export default function Navigation({homePage=true}:{homePage?:boolean}) {
+  const navigationLinks=links.map(([label,href])=>[label,homePage?href:href==="#work"?"/work":"/"+href]);
   const [open, setOpen] = useState(false);
   const pendingSection = useRef<string | null>(null);
 
@@ -51,7 +52,7 @@ export default function Navigation() {
 
   return <>
     <nav className="desktop-navigation" aria-label="Main navigation">
-      {links.map(([label, href]) => <a key={href} href={href} onClick={event => navigate(event, href)}>{label}</a>)}
+      {navigationLinks.map(([label, href]) => <a key={href} href={href} onClick={event => navigate(event, href)}>{label}</a>)}
     </nav>
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger className="mobile-menu-trigger" aria-label="Open navigation menu">
@@ -74,7 +75,7 @@ export default function Navigation() {
           <X size={26} aria-hidden="true" />
         </SheetClose>
         <nav className="mobile-navigation-links" aria-label="Mobile navigation">
-          {links.map(([label, href]) => <a key={href} href={href} onClick={event => navigate(event, href, true)}>{label}</a>)}
+          {navigationLinks.map(([label, href]) => <a key={href} href={href} onClick={event => navigate(event, href, true)}>{label}</a>)}
         </nav>
       </SheetContent>
     </Sheet>
