@@ -386,3 +386,18 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
 @media(prefers-reduced-motion:reduce){
  .cta,.back-link,.project-card-link,.services article,.hero-photo,.hero-motif{animation:none;transition:none}
 }
+
+/* Prominent signature anchored to the hero, independent of its copy. */
+.hero-motif{
+  --motif-cell:clamp(3rem,8.5vw,8rem);
+  position:absolute;inset:auto 0 0 auto;
+  grid-template-columns:repeat(5,var(--motif-cell));
+  grid-template-rows:repeat(3,var(--motif-cell));
+  gap:4px;pointer-events:none;
+}
+.hero-motif i:nth-child(3){border-radius:999px}
+.hero-motif i:nth-child(4){border-width:clamp(6px,.8vw,12px)}
+@media(max-width:48rem){
+  .hero-motif{--motif-cell:clamp(2.5rem,11vw,4.5rem);gap:3px}
+  .hero-copy{padding-bottom:calc(clamp(2.5rem,11vw,4.5rem) * 3 + 2rem)}
+}
