@@ -16,10 +16,13 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
   const navigationLinks=links.map(([label,href])=>[label,homePage?href:href==="#work"?"/work":"/"+href]);
   const [open, setOpen] = useState(false);
   const pendingSection = useRef<string | null>(null);
+  const cancelScroll = useRef<(() => void) | null>(null);
+  useEffect(() => () => cancelScroll.current?.(), []);
 
   function scrollToSection(href: string) {
     const section = document.getElementById(href.slice(1));
     if (!section) return;
+    cancelScroll.current?.();
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // Transfer keyboard focus without causing an instant jump before the scroll.
     if (!section.hasAttribute("tabindex")) {
@@ -27,7 +30,37 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
       section.addEventListener("blur", () => section.removeAttribute("tabindex"), { once: true });
     }
     section.focus({ preventScroll: true });
-    section.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" });
+    const start = window.scrollY;
+    const padding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const end = Math.max(0, Math.min(start + section.getBoundingClientRect().top - padding,
+      document.documentElement.scrollHeight - window.innerHeight));
+    if (reducedMotion) {
+      window.scrollTo({ top: end, behavior: "instant" });
+    } else {
+      // Explicit easing keeps section navigation consistent across browsers.
+      let frame = 0;
+      const began = performance.now();
+      const duration = Math.min(1100, Math.max(700, Math.abs(end - start) * .45));
+      const cancel = () => {
+        cancelAnimationFrame(frame);
+        window.removeEventListener("wheel", cancel);
+        window.removeEventListener("touchstart", cancel);
+        window.removeEventListener("keydown", cancel);
+        cancelScroll.current = null;
+      };
+      cancelScroll.current = cancel;
+      window.addEventListener("wheel", cancel, { passive: true });
+      window.addEventListener("touchstart", cancel, { passive: true });
+      window.addEventListener("keydown", cancel);
+      const step = (now: number) => {
+        const progress = Math.min(1, (now - began) / duration);
+        const eased = progress < .5 ? 4 * progress ** 3 : 1 - (-2 * progress + 2) ** 3 / 2;
+        window.scrollTo({ top: start + (end - start) * eased, behavior: "instant" });
+        if (progress < 1) frame = requestAnimationFrame(step);
+        else cancel();
+      };
+      frame = requestAnimationFrame(step);
+    }
     if (window.location.hash !== href) window.history.pushState(window.history.state, "", href);
   }
 
@@ -35,6 +68,7 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     if (!document.getElementById(href.slice(1))) return;
     event.preventDefault();
+    event.stopPropagation();
     if (mobile) {
       pendingSection.current = href;
       setOpen(false);
