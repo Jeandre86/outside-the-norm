@@ -209,3 +209,16 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
  .rail-caption{display:none}.rail-contact{margin-top:auto}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.project-cover img{transition:none}}
+
+/* White navigation stays legible over the hero photograph. */
+.header nav a,
+.header nav a:hover,
+.header nav a:focus-visible {
+  color: #fff;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 65%);
+}
+.header nav a:hover,
+.header nav a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: .3em;
+}
