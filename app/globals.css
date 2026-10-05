@@ -234,22 +234,26 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
 }
 
 .mobile-menu-trigger{display:none}
+/* The panel supplies the single 80% backdrop; avoid stacking dim overlays. */
+.mobile-navigation-overlay{background:transparent}
 .mobile-navigation-panel{
-  width:min(24rem,100%);max-width:100%;height:100%;height:100dvh;
-  overflow-y:auto;overscroll-behavior:contain;background:#0b140e;color:#fff;
-  border-color:#273029;padding:1.5rem max(1.5rem,env(safe-area-inset-right)) max(1.5rem,env(safe-area-inset-bottom));
+  inset:0;width:100%;max-width:none;height:100vh;height:100dvh;
+  overflow-y:auto;overscroll-behavior:contain;background:rgb(11 20 14 / 80%);color:#fff;
+  border:0;box-shadow:none;gap:0;
+  padding:max(6rem,env(safe-area-inset-top)) max(1.5rem,env(safe-area-inset-right)) max(6rem,env(safe-area-inset-bottom)) max(1.5rem,env(safe-area-inset-left));
 }
-.mobile-navigation-heading{padding:0 3.5rem 1.5rem 0}
+.mobile-navigation-heading{position:absolute;left:max(1.5rem,env(safe-area-inset-left));top:max(1.5rem,env(safe-area-inset-top));padding:0 3.5rem 0 0}
 .mobile-navigation-heading .wordmark{color:#fff;font-size:1.75rem}
 .mobile-menu-close{
-  position:absolute;right:1rem;top:1rem;width:3rem;height:3rem;
+  position:absolute;right:max(1rem,env(safe-area-inset-right));top:max(1rem,env(safe-area-inset-top));width:3rem;height:3rem;
   display:grid;place-items:center;border-radius:.25rem;cursor:pointer;color:#fff;
 }
-.mobile-navigation-links{display:flex;flex-direction:column;margin-top:1rem}
+.mobile-navigation-links{display:flex;flex-direction:column;align-items:center;gap:.5rem;margin:auto 0;flex-shrink:0;text-align:center}
 .mobile-navigation-links a{
-  display:flex;align-items:center;min-height:3.5rem;padding:.875rem 0;
-  font-size:1.375rem;font-weight:600;border-bottom:1px solid #ffffff26;
+  display:flex;align-items:center;justify-content:center;min-height:3.5rem;padding:.625rem 1rem;
+  font-size:clamp(1.75rem,4vw,2.5rem);line-height:1.2;font-weight:600;border:0;
 }
+.mobile-navigation-links a:focus-visible,.mobile-menu-close:focus-visible{outline:2px solid #fff;outline-offset:5px}
 .mobile-navigation-links a:hover,.mobile-menu-close:hover{color:#ff646b}
 @media(max-width:64rem){
   .header{flex-wrap:nowrap;align-items:center}

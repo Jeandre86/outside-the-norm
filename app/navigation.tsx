@@ -58,7 +58,7 @@ export default function Navigation({homePage=true}:{homePage?:boolean}) {
       <SheetTrigger className="mobile-menu-trigger" aria-label="Open navigation menu">
         <Menu size={26} strokeWidth={2} aria-hidden="true" />
       </SheetTrigger>
-      <SheetContent className="mobile-navigation-panel" showCloseButton={false}
+      <SheetContent className="mobile-navigation-panel" overlayClassName="mobile-navigation-overlay" showCloseButton={false}
         onCloseAutoFocus={event => {
           const href = pendingSection.current;
           if (!href) return;
