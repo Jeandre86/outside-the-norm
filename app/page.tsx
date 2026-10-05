@@ -1,4 +1,5 @@
 import Projects from "./projects";
+import Navigation from "./navigation";
 import ContactButton from "./contact-button";
 const services = [
   {name:"Brand Identity",body:"A clear visual language that brings your brand together. Purposeful, recognisable, and consistent.",tags:["Visual identity","Colour & typography","Brand guidelines"]},
@@ -10,7 +11,7 @@ export default function Home(){return <div className="site-shell">
   <div className="page-body">
     <section className="hero" id="home">
       <img fetchPriority="high" width={1536} height={1024} className="hero-photo" src="/images/studio-hero.png" alt=""/>
-      <header className="header"><a className="wordmark" href="#home">Ontwrp<span>.</span></a><nav aria-label="Main navigation"><a className="nav-home" href="#home">Home</a><a href="#approach">About</a><a href="#work">Work</a><a href="#services">What we do</a><a href="#contact">Contact</a></nav></header>
+      <header className="header"><a className="wordmark" href="#home">Ontwrp<span>.</span></a><Navigation/></header>
       <div className="hero-copy"><h1>Designs<br/>that last<span>.</span></h1><p>We craft identities and design digital experiences for brands with the ambition to define the future. No fluff, just pure craft.</p><ContactButton label="Let’s chat"/></div>
       <div className="hero-motif" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div>
     </section>
