@@ -1,5 +1,7 @@
 "use client";
+import LayoutPicker from "./layout-picker";
 import type {Project} from "@/lib/content";
+import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
@@ -15,6 +17,9 @@ const fields=[
 export default function CaseStudyFields({project,onChange,onBusy,onNotice}:{project:Project;onChange:(patch:Partial<Project>)=>void;onBusy:(busy:boolean)=>void;onNotice:(message:string)=>void}){
  const gallery=project.gallery||[];
  return <div className="case-editor-fields"><h3>Case study</h3><p>Each project has its own page. Empty sections stay hidden. Add a publication date to show your newest work first.</p><a className="text-link" href={`/work/${encodeURIComponent(project.id)}`} target="_blank" rel="noreferrer">View project page</a>
+ <label>Case-study headline<Input maxLength={200} value={project.headline||""} placeholder="A short idea that captures the project" onChange={e=>onChange({headline:e.target.value})}/></label>
+ <label className="sample-copy-control"><Checkbox checked={project.sampleContent===true} onCheckedChange={value=>onChange({sampleContent:value===true})}/>Label this case study as illustrative placeholder content</label>
+ <LayoutPicker id={project.id} value={project.caseLayout} onChange={caseLayout=>onChange({caseLayout})}/>
  <label>Publication date<Input type="date" value={project.publishedAt||""} onChange={e=>onChange({publishedAt:e.target.value})}/></label>
  {fields.map(([key,label,hint,max])=><label key={key}>{label}<span className="field-hint">{hint}</span><Textarea rows={5} maxLength={max} value={project[key]||""} onChange={e=>onChange({[key]:e.target.value})}/></label>)}
  <h3>Project gallery</h3><p>Add up to 12 images: research, journeys, wireframes, design explorations, or final work.</p>

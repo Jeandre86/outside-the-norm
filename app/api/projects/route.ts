@@ -1,5 +1,8 @@
+import {layoutSchema} from "@/lib/case-layouts";
 import {readProjects,database} from "@/lib/storage";import {isEditor,sameOrigin} from "@/lib/editor-auth";import {z} from "zod";
 const project=z.object({id:z.string().min(1).max(100),name:z.string().trim().min(1).max(120),service:z.string().max(150),description:z.string().max(3000),status:z.enum(["unlabelled","completed","in-progress","draft"]),image:z.string().regex(/^$|^\/api\/images\/[a-f0-9-]+\.(png|jpg|webp)$/),alt:z.string().max(250),
+ headline:z.string().max(200).optional(),sampleContent:z.boolean().optional(),
+ caseLayout:layoutSchema.optional(),
  publishedAt:z.union([z.literal(""),z.string().date()]).optional(),
  challenge:z.string().max(10000).optional(),role:z.string().max(3000).optional(),
  research:z.string().max(10000).optional(),process:z.string().max(10000).optional(),
