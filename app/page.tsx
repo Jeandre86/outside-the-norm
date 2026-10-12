@@ -1,3 +1,4 @@
+import {readBlog} from "@/lib/blog-storage";
 import Projects from "./projects";
 import Navigation from "./navigation";
 import ContactButton from "./contact-button";
@@ -6,12 +7,12 @@ const services = [
   {name:"Website & App Design",body:"Thoughtful digital experiences. Clear journeys and considered interfaces, designed around the people who use them.",tags:["UX design","UI design","Prototyping"]},
   {name:"Logo Design",body:"One distinctive idea, expressed in a mark. Designed with care to work wherever your brand appears.",tags:["Logo design","Wordmarks","Brand marks"]},
 ];
-export default function Home(){return <div className="site-shell">
+export default async function Home(){const {blog}=await readBlog();return <div className="site-shell">
   <aside className="side-rail" aria-label="Ontwrp"><a href="#home" aria-label="Ontwrp home" className="brand-symbol"/><span className="rail-caption">DESIGN WITH PURPOSE</span><a href="#contact" className="rail-contact">Let’s talk</a></aside>
   <div className="page-body">
     <section className="hero" id="home">
       <img fetchPriority="high" width={1536} height={1024} className="hero-photo" src="/images/studio-hero.png" alt=""/>
-      <header className="header"><a className="wordmark" href="#home">Ontwrp<span>.</span></a><Navigation/></header>
+      <header className="header"><a className="wordmark" href="#home">Ontwrp<span>.</span></a><Navigation blogEnabled={blog.enabled}/></header>
       <div className="hero-copy"><h1>Designs<br/>that last<span>.</span></h1><p>We craft identities and design digital experiences for brands with the ambition to define the future. No fluff, just pure craft.</p><ContactButton label="Let’s chat"/></div>
       <div className="hero-motif" aria-hidden="true"><i/><i/><i/><i/><i/><i/><i/><i/></div>
     </section>
@@ -24,6 +25,6 @@ export default function Home(){return <div className="site-shell">
       <Projects inProgress/>
       <section className="contact-banner" id="contact"><h2>Ready to build a brand that lasts<span>?</span></h2><p>Tell us what you have in mind.<br/>Let’s give it a clear direction.</p><ContactButton label="Start a project"/><a className="secondary-link" href="/work">View our work</a></section>
     </main>
-    <footer><div className="footer-top"><div className="footer-brand"><a className="wordmark" href="#home"><i className="brand-symbol"/>Ontwrp<span>.</span></a><p>A design company crafting clear identities<br/>and considered digital experiences.</p></div><div><h3>COMPANY</h3><a href="#approach">Our philosophy</a><a href="#services">Expertise</a><a href="/work">Our work</a></div><div><h3>LET’S TALK</h3><a href="#contact">Start a project</a><a href="/studio">Studio login</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Ontwrp. All rights reserved.</span><span>BRAND IDENTITY / DIGITAL DESIGN / LOGO DESIGN</span></div></footer>
+    <footer><div className="footer-top"><div className="footer-brand"><a className="wordmark" href="#home"><i className="brand-symbol"/>Ontwrp<span>.</span></a><p>A design company crafting clear identities<br/>and considered digital experiences.</p></div><div><h3>COMPANY</h3><a href="#approach">Our philosophy</a><a href="#services">Expertise</a><a href="/work">Our work</a></div><div><h3>LET’S TALK</h3><a href="#contact">Start a project</a><a href="/admin">Admin login</a></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Ontwrp. All rights reserved.</span><span>BRAND IDENTITY / DIGITAL DESIGN / LOGO DESIGN</span></div></footer>
   </div>
 </div>}

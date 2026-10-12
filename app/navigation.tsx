@@ -12,8 +12,9 @@ const links = [
   ["Contact", "#contact"],
 ];
 
-export default function Navigation({homePage=true}:{homePage?:boolean}) {
+export default function Navigation({homePage=true,blogEnabled=false}:{homePage?:boolean;blogEnabled?:boolean}) {
   const navigationLinks=links.map(([label,href])=>[label,homePage?href:href==="#work"?"/work":"/"+href]);
+  if(blogEnabled)navigationLinks.push(["Journal","/blog"]);
   const [open, setOpen] = useState(false);
   const pendingSection = useRef<string | null>(null);
   const cancelScroll = useRef<(() => void) | null>(null);

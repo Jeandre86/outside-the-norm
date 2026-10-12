@@ -1,5 +1,6 @@
 import type {CaseLayout} from "./case-layouts";
 export type Project={id:string;name:string;service:string;description:string;status:"unlabelled"|"completed"|"in-progress"|"draft";image:string;alt:string;
+ website?:string;
  headline?:string;
  sampleContent?:boolean;
  caseLayout?:CaseLayout;
