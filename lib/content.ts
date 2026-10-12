@@ -20,7 +20,9 @@ export function newestProjects(projects:Project[]){
 }
 
 export const transplantAquaticsCover="/images/transplant-aquatics-work-cover.png";
+export const karosCover="/images/karos-logo-cover.png";
 export function withProjectCover(project:Project):Project{
+ if(project.id==="karos"&&!project.image)return {...project,service:"Logo design",image:karosCover,alt:"White Karos Avontuurplaas logo with mountain and compass details over a green landscape"};
  return project.id==="world-transplant-aquatics"&&!project.image
   ? {...project,image:transplantAquaticsCover,alt:"Transplant Aquatics rankings interface on a desktop monitor with navy and cyan pool-water lighting; presentation mockup"}
   : project;
