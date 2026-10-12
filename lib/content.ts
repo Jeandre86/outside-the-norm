@@ -18,3 +18,10 @@ export const defaults:Project[]=[{id:"kleva",name:"Kleva",service:"",description
 export function newestProjects(projects:Project[]){
  return projects.filter(p=>p.status!=="draft").map((project,index)=>({project,index})).sort((a,b)=>(b.project.publishedAt||"").localeCompare(a.project.publishedAt||"")||a.index-b.index).map(item=>item.project);
 }
+
+export const transplantAquaticsCover="/images/transplant-aquatics-work-cover.png";
+export function withProjectCover(project:Project):Project{
+ return project.id==="world-transplant-aquatics"&&!project.image
+  ? {...project,image:transplantAquaticsCover,alt:"Transplant Aquatics rankings interface on a desktop monitor with navy and cyan pool-water lighting; presentation mockup"}
+  : project;
+}

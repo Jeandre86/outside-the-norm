@@ -401,3 +401,7 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
   .hero-motif{--motif-cell:clamp(3rem,14vw,5.75rem);gap:3px}
   .hero-copy{padding-bottom:calc(clamp(3rem,14vw,5.75rem) * 3 + 2rem)}
 }
+
+/* Preserve the aquatic brand palette and the complete mockup composition. */
+.transplant-cover img{filter:none;object-position:center;transform:none}
+.transplant-cover:hover img{transform:scale(1.025)}
