@@ -1,3 +1,4 @@
+import {applyKlevaStory} from "./kleva-story";
 import type {Project} from "./content";
 import {applyWorldGreatestGameSample,worldGreatestGameSample} from "./world-greatest-game-sample";
 
@@ -8,6 +9,7 @@ const introductions:Record<string,{headline:string;description:string}>={
 };
 
 export function applySampleWhenEmpty(project:Project):Project{
+ if(project.id==="kleva")return applyKlevaStory(project);
  if(project.id==="world-greatest-game")return applyWorldGreatestGameSample(project);
  const intro=introductions[project.id];
  const hasStory=[project.challenge,project.role,project.research,project.process,project.solution,project.deliverables,project.outcome].some(text=>text?.trim());

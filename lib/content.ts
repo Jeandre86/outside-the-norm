@@ -21,8 +21,10 @@ export function newestProjects(projects:Project[]){
 
 export const transplantAquaticsCover="/images/transplant-aquatics-work-cover.png";
 export const karosCover="/images/karos-card-showcase.png";
+export const klevaCover="/images/kleva-showcase.png";
 export const wggCover="/images/wgg-brand-showcase.png";
 export function withProjectCover(project:Project):Project{
+ if(project.id==="kleva"&&!project.image)return {...project,image:klevaCover,alt:"Kleva logo card and app dashboard on a smartphone in a dark studio; presentation mockup"};
  if(project.id==="world-greatest-game"&&!project.image)return {...project,image:wggCover,alt:"World’s Greatest Game brand identity presented on a white card beside blue, yellow and orange cards; presentation mockup"};
  if(project.id==="karos"&&(!project.image||project.image==="/images/karos-logo-cover.png"))return {...project,service:"Logo design",image:karosCover,alt:"Karos Avontuurplaas logo presented on a forest-green card with a mountain backdrop; presentation mockup"};
  return project.id==="world-transplant-aquatics"&&!project.image

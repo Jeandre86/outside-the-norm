@@ -434,3 +434,6 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
 .sketch-image-story i:first-child{grid-column:1/-1;background:#222}.sketch-image-story i:last-child{grid-column:1/-1;background:#e50914}
 .gallery-editor-item select{padding:.75rem;border:1px solid #ccc;background:white;color:#141a15;min-height:44px}
 @media(max-width:48rem){.story-intro{padding:2rem 6% 3rem}.story-facts{gap:1.5rem 2rem}.story-swatches{grid-template-columns:1fr}.story-swatches>div{min-height:12rem}.story-images{grid-template-columns:1fr}.story-images figure{grid-column:1/-1}.story-sheet-preview{height:42rem}.story-related .section-heading{align-items:flex-start;flex-direction:column}}
+
+.project-cover.kleva-cover img{filter:none;transform:none;object-fit:cover}
+.project-cover.kleva-cover:hover img{transform:scale(1.025)}
