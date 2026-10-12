@@ -7,7 +7,7 @@ import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 export default function LayoutPicker({id,value,onChange}:{id:string;value?:CaseLayout;onChange:(layout:CaseLayout)=>void}){
  const selected=resolveLayout(value);const [presets,setPresets]=useState<CasePreset[]>([]);const [revision,setRevision]=useState(0);const [ready,setReady]=useState(false);const [name,setName]=useState("");const [busy,setBusy]=useState(false);const [notice,setNotice]=useState("");
- async function load(){setReady(false);try{const r=await fetch("/api/case-templates");if(!r.ok)throw Error();const data=await r.json() as {presets:CasePreset[];revision:number};setPresets(data.presets);setRevision(data.revision);setReady(true);setNotice("")}catch{setNotice("Saved layouts could not load. You can still use the four built-in layouts.")}}
+ async function load(){setReady(false);try{const r=await fetch("/api/case-templates");if(!r.ok)throw Error();const data=await r.json() as {presets:CasePreset[];revision:number};setPresets(data.presets);setRevision(data.revision);setReady(true);setNotice("")}catch{setNotice("Saved layouts could not load. You can still use the built-in layouts.")}}
  useEffect(()=>{void load()},[]);
  function reorder(index:number,direction:number){const order=[...selected.sectionOrder];[order[index],order[index+direction]]=[order[index+direction],order[index]];onChange({...selected,sectionOrder:order})}
  return <section className="layout-picker"><h3>Case-study layout</h3><p>Choose a starting point, arrange the chapters, and save combinations to reuse on future projects. Changing a layout keeps your words and images.</p>

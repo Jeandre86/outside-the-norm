@@ -411,3 +411,26 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
 
 .wgg-cover img{filter:none;object-position:center;transform:none}
 .wgg-cover:hover img{transform:scale(1.025)}
+
+/* Image-led case studies: Ontwrp typography with an editorial visual rhythm. */
+.story-intro{max-width:76rem;margin:auto;padding:4rem 7% 4.5rem}
+.story-intro .back-link{margin-bottom:3rem}
+.story-intro h1{max-width:58rem;font-size:clamp(2.8rem,6vw,6.5rem);line-height:1.02;letter-spacing:-.055em}
+.story-summary{max-width:42rem;font-size:clamp(1.1rem,1.8vw,1.4rem);line-height:1.65;color:#666d66;margin-top:2rem}
+.story-facts{display:flex;flex-wrap:wrap;gap:2rem 4rem;border-top:1px solid #ddd;padding-top:1.75rem;margin:2.5rem 0 0}
+.story-facts dt{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:#777;margin-bottom:.5rem}.story-facts dd{margin:0;font-size:.95rem;font-weight:600}
+.story-hero{margin:0;background:#f3f3f1}.story-hero img{display:block;width:100%;max-height:85vh;object-fit:contain}
+.story-content{padding-top:1rem}.story-chapter{max-width:43rem;margin:0 auto;padding:clamp(3rem,6vw,6rem) 1.5rem}
+.story-chapter h2{font-size:clamp(2rem,3vw,3.2rem);margin-bottom:1.75rem}
+.story-chapter .case-prose{font-size:1.05rem;line-height:1.85}.story-chapter .case-prose p+p{margin-top:1.3rem}
+.story-images{max-width:78rem;margin:0 auto;padding:0 5%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}
+.story-images figure{margin:0;min-width:0}.story-image-wide{grid-column:1/-1}.story-images img{display:block;width:100%;height:auto}.story-images figcaption,.story-caption{font-size:.85rem;line-height:1.6;color:#737973;margin-top:1rem}
+.story-images-grid figure{grid-column:auto}.story-images-stack figure{grid-column:1/-1}
+.story-brand{background:#10182b;color:white;padding:clamp(2rem,6vw,5rem) 7%;margin:1rem 0 3rem}.story-brand-heading{max-width:65rem;margin:auto}.story-brand .eyebrow{color:#bcc8de}.story-brand h2{margin-bottom:3rem}
+.story-swatches{max-width:65rem;margin:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.story-swatches>div{min-height:clamp(12rem,22vw,22rem);padding:1.5rem;color:#10182b;display:flex;flex-direction:column;justify-content:space-between}.story-swatches>div:first-child{color:white}.story-swatches span{font-size:.8rem;text-transform:uppercase;letter-spacing:.08em}.story-swatches strong{font-size:clamp(1.25rem,2.5vw,2rem);line-height:1.1}.story-brand .story-caption{max-width:65rem;margin:1.5rem auto 0;color:#b9c5d9}
+.story-reference{background:#f5f6f8;padding-bottom:4rem}.story-sheet-preview{position:relative;display:block;max-width:64rem;margin:auto;height:70rem;max-height:110vh;overflow:hidden;background:#f6f8fa}.story-sheet-preview img{width:100%;height:auto;display:block}.story-sheet-preview span{position:absolute;bottom:0;left:0;right:0;padding:2rem;background:#10182bf5;color:#fff;text-align:center;font-weight:600}
+.story-related{padding:clamp(3rem,7vw,7rem) 7%;background:#f6f6f4}.story-related .project-description{display:none}
+.story-contact{background:#e50914;text-align:left;padding:5rem 7%}.story-contact .eyebrow,.story-contact h2 span{color:#fff}.story-contact .eyebrow:before{background:#fff}.story-contact .cta{background:#fff;color:#151a15}.story-contact h2{margin-bottom:2rem}
+.sketch-image-story i:first-child{grid-column:1/-1;background:#222}.sketch-image-story i:last-child{grid-column:1/-1;background:#e50914}
+.gallery-editor-item select{padding:.75rem;border:1px solid #ccc;background:white;color:#141a15;min-height:44px}
+@media(max-width:48rem){.story-intro{padding:2rem 6% 3rem}.story-facts{gap:1.5rem 2rem}.story-swatches{grid-template-columns:1fr}.story-swatches>div{min-height:12rem}.story-images{grid-template-columns:1fr}.story-images figure{grid-column:1/-1}.story-sheet-preview{height:42rem}.story-related .section-heading{align-items:flex-start;flex-direction:column}}

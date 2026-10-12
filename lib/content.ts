@@ -11,7 +11,7 @@ export type Project={id:string;name:string;service:string;description:string;sta
  solution?:string;
  deliverables?:string;
  outcome?:string;
- gallery?:{image:string;alt:string;caption:string}[];
+ gallery?:{image:string;alt:string;caption:string;format?:"wide"|"paired";after?:"challenge"|"role"|"research"|"process"|"solution"|"deliverables"|"outcome"}[];
 };
 export const defaults:Project[]=[{id:"kleva",name:"Kleva",service:"",description:"",status:"unlabelled",image:"",alt:""},{id:"world-greatest-game",name:"World Greatest Game",service:"Brand identity",description:"",status:"unlabelled",image:"",alt:""},{id:"karos",name:"Karos",service:"Logo design",description:"",status:"unlabelled",image:"",alt:""},{id:"world-transplant-aquatics",name:"World Transplant Aquatics",service:"",description:"",status:"unlabelled",image:"",alt:""}];
 

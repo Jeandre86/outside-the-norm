@@ -13,7 +13,7 @@ export const worldGreatestGameSample:Partial<Project>={
  solution:"Competitive energy, clearly organised\n\nThe blue-to-cyan symbol and bold wordmark establish recognition. The three accent colours carry the identity into round-based communication, supported by a calm dark-and-light foundation. The supplied system shows digital, social and physical application examples.",
  deliverables:"Completed scope: brand identity\n\n• Crown-inspired W symbol\n• Logo lockups and light/dark variants\n• Colour palette\n• Typography system\n• Brand application examples\n\nThe showcase card is a presentation mockup of the identity.",
  outcome:"Brand identity complete. App build next.\n\nThe identity establishes the visual foundation for the next phase of the product. The app build is planned next; no launch results or performance metrics are claimed.",
- caseLayout:{layout:"editorial",galleryLayout:"interleaved",sectionOrder:["challenge","role","research","process","solution","deliverables","outcome"]}
+ caseLayout:{layout:"image-story",galleryLayout:"interleaved",sectionOrder:["challenge","role","research","process","solution","deliverables","outcome"]}
 };
 export function applyWorldGreatestGameSample(project:Project):Project{
  if(project.id!=="world-greatest-game")return project;

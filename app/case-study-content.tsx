@@ -1,9 +1,11 @@
 import {Fragment} from "react";
 import type {Project} from "@/lib/content";
 import {resolveLayout,sectionLabels} from "@/lib/case-layouts";
+import ImageStory from "./image-story";
 import ContactButton from "./contact-button";
-export default function CaseStudyContent({project:p,from}:{project:Project;from?:string}){
+export default function CaseStudyContent({project:p,from,related=[]}:{project:Project;from?:string;related?:Project[]}){
  const layout=resolveLayout(p.caseLayout);
+ if(layout.layout==="image-story")return <ImageStory project={p} from={from} related={related}/>;
  const sections=layout.sectionOrder.filter(key=>p[key]?.trim());
  const gallery=p.gallery||[];
  function visual(index:number){const image=gallery[index];if(!image)return null;return <figure className="case-visual" key={image.image+index}><img loading="lazy" src={image.image} alt={image.alt||`${p.name} project detail ${index+1}`} width={1536} height={1024}/>{image.caption&&<figcaption>{image.caption}</figcaption>}</figure>}
