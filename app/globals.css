@@ -408,3 +408,6 @@ footer{padding:3rem max(7.3%,env(safe-area-inset-left)) max(1.25rem,env(safe-are
 
 .karos-cover img{filter:none;object-position:center;transform:none}
 .karos-cover:hover img{transform:scale(1.025)}
+
+.wgg-cover img{filter:none;object-position:center;transform:none}
+.wgg-cover:hover img{transform:scale(1.025)}
