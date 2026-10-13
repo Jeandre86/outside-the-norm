@@ -1,6 +1,6 @@
 import type {Project} from './content';
 export const transplantSports:Project={
- id:'transplant-sports',name:'Transplant Sports',service:'Logo design & Website design',status:'unlabelled',publishedAt:'2026-10-13',website:'https://transplantsports.org.za/',image:'/images/transplant-sports-logo.png',alt:'Transplant Sports logo',sampleContent:false,
+ id:'transplant-sports',name:'Transplant Sports',service:'Logo design & Website design',status:'unlabelled',publishedAt:'2026-10-13',website:'https://transplantsports.org.za/',image:'/images/transplant-sports-showcase.png',alt:'Transplant Sports logo card with a desktop monitor in a green and gold studio; presentation mockup',sampleContent:false,
  headline:'An identity with a place to connect',description:'Logo and website design for Transplant Sports. A shared identity carried from the organisation’s mark into its online presence.',
  challenge:'An identity and an online presence\n\nThe project brings together two connected design needs: a logo for Transplant Sports and a website through which the organisation can present itself online.',
  role:'Ontwrp created the logo and designed the website. This case study focuses on those two design contributions.',
