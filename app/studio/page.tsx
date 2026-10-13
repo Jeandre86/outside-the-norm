@@ -1,3 +1,5 @@
-import {isEditor} from "@/lib/editor-auth";import {chatGPTSignInPath,getChatGPTUser} from "@/app/chatgpt-auth";import AdminPanel from "./admin-panel";
-export const dynamic="force-dynamic";
-export default async function Studio(){const allowed=await isEditor();const user=await getChatGPTUser();return <main className="studio"><a className="wordmark" href="/">Ontwrp<span>.</span></a><h1>Admin<span>.</span></h1>{allowed?<AdminPanel/>:<><p>This editing area is restricted to the Ontwrp owner.</p>{!user?<a className="cta" href={chatGPTSignInPath("/studio")} target="_top">Sign in with ChatGPT</a>:<p className="notice">Your account does not have editing access yet. Ask to configure the owner’s sign-in email.</p>}</>}</main>}
+import {isEditor} from '@/lib/editor-auth';
+import {chatGPTSignInPath,chatGPTSignOutPath,getChatGPTUser} from '@/app/chatgpt-auth';
+import AdminPanel from './admin-panel';
+export const dynamic='force-dynamic';
+export default async function Studio(){const user=await getChatGPTUser();const allowed=await isEditor();if(allowed&&user)return <AdminPanel email={user.email} signOut={chatGPTSignOutPath('/admin')}/>;return <main className="admin-login"><section><a className="wordmark" href="/">Ontwrp<span>.</span></a><p className="eyebrow">PRIVATE WORKSPACE</p><h1>Studio login<span>.</span></h1><p>Sign in to manage work, write stories and read enquiries.</p>{!user?<a className="cta" href={chatGPTSignInPath('/admin')} target="_top">Sign in with ChatGPT</a>:<><p role="alert">This account does not have admin access. Sign in with the Ontwrp owner account.</p><a className="cta" href={chatGPTSignOutPath('/admin')} target="_top">Sign out and switch account</a></>}<a className="back-link" href="/">← Back to website</a></section></main>}
