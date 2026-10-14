@@ -6,8 +6,8 @@ import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 const fields=[
- ["challenge","The challenge","What problem or business need brought the client to Ontwrp?",10000],
- ["role","Our role","What was Ontwrp responsible for? Include the scope and any collaborators where relevant.",3000],
+ ["challenge","The challenge","What problem or business need brought the client to Outside the Norm?",10000],
+ ["role","Our role","What was Outside the Norm responsible for? Include the scope and any collaborators where relevant.",3000],
  ["research","Research & insights","What did you learn about the audience or users? Include only research you actually carried out.",10000],
  ["process","Design process","Explain the ideas explored, decisions made, and refinements based on feedback.",10000],
  ["solution","The solution","How did the final design address the challenge?",10000],

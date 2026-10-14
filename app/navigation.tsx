@@ -103,8 +103,8 @@ export default function Navigation({homePage=true,blogEnabled=false}:{homePage?:
           requestAnimationFrame(() => scrollToSection(href));
         }}>
         <SheetHeader className="mobile-navigation-heading">
-          <SheetTitle className="wordmark">Ontwrp<span>.</span></SheetTitle>
-          <SheetDescription className="sr-only">Navigate the Ontwrp website.</SheetDescription>
+          <SheetTitle className="wordmark"><img className="brand-logo" src="/images/otn-stack.svg" alt="Outside the Norm"/></SheetTitle>
+          <SheetDescription className="sr-only">Navigate the Outside the Norm website.</SheetDescription>
         </SheetHeader>
         <SheetClose className="mobile-menu-close" aria-label="Close navigation menu">
           <X size={26} aria-hidden="true" />
