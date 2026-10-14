@@ -1,4 +1,5 @@
 import {readBlog} from "@/lib/blog-storage";
+import SocialIcons from "./social-icons";
 import Projects from "./projects";
 import Navigation from "./navigation";
 import ContactButton from "./contact-button";
@@ -8,7 +9,7 @@ const services = [
   {name:"Logo Design",body:"One distinctive idea, expressed in a mark. Designed with care to work wherever your brand appears.",tags:["Logo design","Wordmarks","Brand marks"]},
 ];
 export default async function Home(){const {blog}=await readBlog();return <div className="site-shell">
-  <aside className="side-rail" aria-label="Outside the Norm"><a href="#home" aria-label="Outside the Norm home" className="brand-symbol"/><span className="rail-caption">DESIGN WITH PURPOSE</span><a href="#contact" className="rail-contact">Let’s talk</a></aside>
+  <aside className="side-rail" aria-label="Outside the Norm"><a href="#home" aria-label="Outside the Norm home" className="brand-symbol"/><span className="rail-caption">Different by design.</span><SocialIcons/></aside>
   <div className="page-body">
     <section className="hero" id="home">
       <img fetchPriority="high" width={1536} height={1024} className="hero-photo" src="/images/studio-hero.png" alt=""/>
