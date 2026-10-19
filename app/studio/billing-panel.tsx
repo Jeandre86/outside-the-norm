@@ -175,6 +175,7 @@ export default function BillingPanel({ tab, onDirtyChange }: {
                     setIssueOpen(false);
                     setPreview(true);
                 } }}/>}{preview && <iframe key={rev} className="billing-pdf" title="Invoice PDF preview" src={'/api/billing/pdf?id=' + invoice.id}/>}
+ {invoice.issuedAt && <InvoiceStatusForm key={invoice.id + '-status-' + rev} invoice={invoice} busy={busy} error={actionError} onSave={act}/>}
  {invoice.issuedAt && !invoice.cancelledAt && <><div className="billing-toolbar"><Button onClick={() => setEmailOpen(!emailOpen)}>Preview & send email</Button><Button variant="outline" onClick={() => {
                             if (confirm('Confirm you have sent this invoice outside the admin?'))
                                 void act({ type: 'sent', id: invoice.id });
@@ -305,4 +306,29 @@ function IssueInvoiceForm({ invoice, settings, busy, dirty, error, onIssue, onCa
  {error && <p className="invoice-action-error" role="alert">{error}</p>}{dirty && <p role="status">Save your draft changes above before confirming.</p>}
  <div className="billing-toolbar"><Button type="submit" disabled={busy || dirty}>{busy ? 'Issuing…' : 'Confirm & issue invoice'}</Button><Button type="button" variant="outline" disabled={busy} onClick={onCancel}>Keep as draft</Button></div>
  </form>;
+}
+
+function InvoiceStatusForm({ invoice, busy, error, onSave }: { invoice: Invoice; busy: boolean; error: string; onSave: (command: unknown) => Promise<unknown> }) {
+    const [next, setNext] = useState('');
+    const [date, setDate] = useState(today());
+    const [amount, setAmount] = useState('');
+    const [reason, setReason] = useState('');
+    const balance = totals(invoice).balance;
+    const payment = next === 'paid' || next === 'part';
+    return <form className="billing-card" onSubmit={e => {
+        e.preventDefault();
+        if (!next || busy) return;
+        const command = payment ? { type: 'payment', id: invoice.id, date, amount: next === 'paid' ? balance : Math.round(Number(amount) * 100), reference: reason || 'Marked paid manually' } : { type: next, id: invoice.id, reason };
+        void onSave(command);
+    }}><h3>Change invoice status</h3><p>Current status: <strong>{status(invoice)}</strong> · Balance: {moneyText(balance, invoice.currency)}</p>
+    <div className="billing-fields"><label>New status<select required value={next} disabled={busy} onChange={e => {setNext(e.target.value);setReason('');}}><option value="">Choose a status</option>{invoice.cancelledAt ? <option value="reopen">Reopen invoice</option> : <><option value="sent">Sent — sent outside the admin</option>{balance > 0 && <><option value="paid">Paid — record remaining balance</option><option value="part">Part-paid — record a payment</option></>}{totals(invoice).paid > 0 && <option value="unpaid">Unpaid — reverse recorded payments</option>}<option value="cancel">Cancelled</option></>}</select></label>
+    {payment && <label>Date received<input required type="date" max={today()} value={date} onChange={e => setDate(e.target.value)}/></label>}
+    {next === 'part' && <label>Payment amount ({invoice.currency})<input required type="number" min="0.01" max={(balance - 1) / 100} step="0.01" value={amount} onChange={e => setAmount(e.target.value)}/></label>}
+    {next && next !== 'sent' && <label>{payment ? 'Payment reference / method (optional)' : 'Reason'}<input required={!payment} maxLength={payment ? 200 : 300} value={reason} onChange={e => setReason(e.target.value)}/></label>}</div>
+    {next === 'paid' && <p>This records a payment of {moneyText(balance, invoice.currency)}. Confirm only after receiving the money.</p>}
+    {next === 'unpaid' && <p>This reverses all active payment records and restores the outstanding balance. The original records remain in the history.</p>}
+    {next === 'cancel' && totals(invoice).paid > 0 && <p>Correct or reverse recorded payments before cancelling this invoice.</p>}
+    <p className="billing-tip">Overdue is calculated from the due date. Issued invoices keep their number and details; duplicate one to create a new draft.</p>
+    {error && <p role="alert" className="invoice-action-error">{error}</p>}
+    <Button type="submit" disabled={!next || busy || (next === 'cancel' && totals(invoice).paid > 0)}>{busy ? 'Saving…' : 'Update status'}</Button></form>;
 }

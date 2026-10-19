@@ -24,3 +24,10 @@ assert.equal(commandSchema.safeParse({type:'payment',id:dup,date:today(),amount:
 const long={...b.invoices[0],items:Array.from({length:60},(_,n)=>({description:`Service ${n+1}: `+'Detailed brand design deliverable '.repeat(12),rate:12000,quantity:1,discount:0})),notes:'A very long note. '.repeat(120)};const longPdf=await invoicePdf(long,b);const pages=(await PDFDocument.load(longPdf)).getPageCount();assert.ok(pages>3);writeFileSync('/tmp/otn-invoice-long.pdf',longPdf);
 const pending=b.invoices[0];pending.emails.push({id:crypto.randomUUID(),date:new Date().toISOString(),to:'jane@example.com',subject:'Test',message:'Test',status:'sending'});assert.throws(()=>applyCommand(b,{type:'cancel',id:pending.id,reason:'Cancel'}),/pending email/);
 console.log('PASS: totals, rounding, partial/full payments, reversals, immutable issued data, numbering, invalid input, cancellation, duplicate drafts, PDF and multi-page layout ('+pages+' pages).');
+const statusBilling=structuredClone(b);const corrected=statusBilling.invoices.find(x=>x.id===invId)!;
+applyCommand(statusBilling,{type:'reopen',id:invId,reason:'Cancelled in error'});assert.notEqual(status(corrected),'Cancelled');assert.equal(corrected.number,'OTN-00001');
+applyCommand(statusBilling,{type:'payment',id:invId,date:today(),amount:totals(corrected).balance,reference:'Received'});assert.equal(status(corrected),'Paid');
+applyCommand(statusBilling,{type:'unpaid',id:invId,reason:'Payment entered in error'});assert.equal(totals(corrected).paid,0);assert.equal(totals(corrected).balance,20700);assert.ok(corrected.payments.every(p=>p.voidedAt));assert.match(corrected.history.at(-1)!.message,/Payment entered in error/);
+applyCommand(statusBilling,{type:'sent',id:invId});assert.equal(status(corrected),'Sent');assert.throws(()=>applyCommand(statusBilling,{type:'reopen',id:invId,reason:'Again'}),/Only cancelled/);
+assert.equal(commandSchema.safeParse({type:'unpaid',id:invId,reason:''}).success,false);
+console.log('PASS: reopen retains invoice number; paid/unpaid corrections preserve payment history, restore balance and validate reasons.');

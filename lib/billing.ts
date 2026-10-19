@@ -81,6 +81,8 @@ export const commandSchema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('duplicate'), id: z.string().uuid() }),
     z.object({ type: z.literal('deleteDraft'), id: z.string().uuid() }),
     z.object({ type: z.literal('issue'), id: z.string().uuid(), details: z.object({ address: text(800).min(1, 'Enter your billing address.'), bankDetails: text(1200).min(1, 'Enter banking details or payment instructions.'), taxNumber: text(80) }).optional() }),
+    z.object({ type: z.literal('reopen'), id: z.string().uuid(), reason: text(300).min(1) }),
+    z.object({ type: z.literal('unpaid'), id: z.string().uuid(), reason: text(300).min(1) }),
     z.object({ type: z.literal('sent'), id: z.string().uuid() }),
     z.object({ type: z.literal('payment'), id: z.string().uuid(), date, amount: money.refine(v => v > 0), reference: text(200) }),
     z.object({ type: z.literal('voidPayment'), id: z.string().uuid(), paymentId: z.string().uuid(), reason: text(300).min(1) }),
@@ -168,8 +170,22 @@ export function applyCommand(b: Billing, c: z.infer<typeof commandSchema>, now =
         log(i, 'Invoice issued');
         return i.id;
     }
+    if (c.type === 'reopen') {
+        if (!i.issuedAt || !i.cancelledAt) throw Error('Only cancelled invoices can be reopened.');
+        i.cancelledAt = undefined;
+        i.cancelReason = undefined;
+        log(i, 'Reopened: ' + c.reason);
+        return i.id;
+    }
     if (!i.issuedAt || i.cancelledAt)
         throw Error('This action requires an active, issued invoice.');
+    if (c.type === 'unpaid') {
+        for (const payment of i.payments.filter(p => !p.voidedAt)) {
+            payment.voidedAt = now;
+            payment.voidReason = c.reason;
+        }
+        log(i, 'Marked unpaid; recorded payments reversed: ' + c.reason);
+    }
     if (c.type === 'sent') {
         i.sentAt = now;
         log(i, 'Marked sent manually');
