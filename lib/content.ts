@@ -1,5 +1,6 @@
 import type {CaseLayout} from "./case-layouts";
 export type Project={id:string;name:string;service:string;description:string;status:"unlabelled"|"completed"|"in-progress"|"draft";image:string;alt:string;
+ sortOrder?:number;
  website?:string;
  headline?:string;
  sampleContent?:boolean;
@@ -16,8 +17,17 @@ export type Project={id:string;name:string;service:string;description:string;sta
 };
 export const defaults:Project[]=[{id:"kleva",name:"Kleva",service:"",description:"",status:"unlabelled",image:"",alt:""},{id:"world-greatest-game",name:"World Greatest Game",service:"Brand identity",description:"",status:"unlabelled",image:"",alt:""},{id:"karos",name:"Karos",service:"Logo design",description:"",status:"unlabelled",image:"",alt:""},{id:"world-transplant-aquatics",name:"World Transplant Aquatics",service:"",description:"",status:"unlabelled",image:"",alt:""}];
 
-export function newestProjects(projects:Project[]){
- return projects.filter(p=>p.status!=="draft").map((project,index)=>({project,index})).sort((a,b)=>(b.project.publishedAt||"").localeCompare(a.project.publishedAt||"")||a.index-b.index).map(item=>item.project);
+export function orderedProjects(projects:Project[]){
+ return projects.map((project,index)=>({project,index})).sort((a,b)=>{
+ const ao=a.project.sortOrder,bo=b.project.sortOrder;
+ if(ao!==undefined||bo!==undefined){if(ao===undefined)return 1;if(bo===undefined)return -1;if(ao!==bo)return ao-bo;}
+ return (b.project.publishedAt||"").localeCompare(a.project.publishedAt||"")||a.index-b.index;
+ }).map(item=>item.project);
+}
+export function newestProjects(projects:Project[]){return orderedProjects(projects).filter(p=>p.status!=="draft");}
+export function moveProject(projects:Project[],id:string,target:number){
+ const rows=orderedProjects(projects);const from=rows.findIndex(p=>p.id===id);if(from<0||target<0||target>=rows.length)return rows;
+ const [project]=rows.splice(from,1);rows.splice(target,0,project);return rows.map((p,index)=>({...p,sortOrder:index}));
 }
 
 export const transplantAquaticsCover="/images/transplant-aquatics-work-cover.png";

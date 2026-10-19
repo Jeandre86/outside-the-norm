@@ -2,6 +2,7 @@ import {transplantAquaticsCover,karosCover,wggCover,klevaCover} from "@/lib/cont
 import {layoutSchema} from "@/lib/case-layouts";
 import {readProjects,database} from "@/lib/storage";import {isEditor,sameOrigin} from "@/lib/editor-auth";import {z} from "zod";
 const project=z.object({id:z.string().min(1).max(100),name:z.string().trim().min(1).max(120),service:z.string().max(150),description:z.string().max(3000),status:z.enum(["unlabelled","completed","in-progress","draft"]),image:z.union([z.literal("/images/transplant-sports-logo.png"),z.literal("/images/transplant-sports-showcase-v2.png"),z.literal(transplantAquaticsCover),z.literal(karosCover),z.literal(wggCover),z.literal(klevaCover),z.string().regex(/^$|^\/api\/images\/[a-f0-9-]+\.(png|jpg|webp)$/)]),alt:z.string().max(250),
+ sortOrder:z.number().int().min(0).max(10000).optional(),
  website:z.union([z.literal(""),z.string().url().max(2000).refine(v=>/^https?:\/\//i.test(v),"Use an http or https address.")]).optional(),
  headline:z.string().max(200).optional(),sampleContent:z.boolean().optional(),
  caseLayout:layoutSchema.optional(),

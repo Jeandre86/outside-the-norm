@@ -57,12 +57,20 @@ export type Billing = {
 export function newBilling(): Billing { return { settings: { name: 'Outside the Norm', email: 'swemmerx@gmail.com', replyTo: 'swemmerx@gmail.com', address: '', phone: '', taxNumber: '', bankDetails: '', currency: 'ZAR', prefix: 'OTN-', nextNumber: 1, termsDays: 14, terms: 'Thank you for choosing Outside the Norm. Please use the invoice number as your payment reference.', taxRate: 0, emailProvider: 'gmail' }, clients: [], presets: [{ id: '11111111-1111-4111-8111-111111111111', name: 'Logo design', description: 'Logo design', rate: 0 }, { id: '22222222-2222-4222-8222-222222222222', name: 'Brand identity', description: 'Brand identity', rate: 0 }, { id: '33333333-3333-4333-8333-333333333333', name: 'Website & app design', description: 'Website & app design', rate: 0 }], invoices: [], requests: [] }; }
 export function totals(i: Pick<Invoice, 'items' | 'taxRate' | 'payments'>) { const gross = i.items.reduce((n, x) => n + Math.round(x.quantity * x.rate), 0); const subtotal = i.items.reduce((n, x) => n + Math.round(Math.round(x.quantity * x.rate) * (10000 - x.discount) / 10000), 0); const tax = Math.round(subtotal * i.taxRate / 10000); const total = subtotal + tax; const paid = i.payments.filter(p => !p.voidedAt).reduce((n, p) => n + p.amount, 0); return { gross, discount: gross - subtotal, subtotal, tax, total, paid, balance: total - paid }; }
 export function today() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Johannesburg', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
-export function status(i: Invoice) { if (i.cancelledAt)
-    return 'Cancelled'; if (!i.issuedAt)
-    return 'Draft'; const t = totals(i); if (t.balance <= 0)
-    return 'Paid'; if (i.dueDate < today())
-    return 'Overdue'; if (t.paid > 0)
-    return 'Part-paid'; return i.sentAt ? 'Sent' : 'Issued'; }
+export function status(i: Invoice) {
+    if (i.cancelledAt)
+        return 'Cancelled';
+    if (!i.issuedAt)
+        return 'Draft';
+    const t = totals(i);
+    if (t.balance <= 0)
+        return 'Paid';
+    if (i.dueDate < today())
+        return 'Overdue';
+    if (t.paid > 0)
+        return 'Part-paid';
+    return i.sentAt ? 'Sent' : 'Issued';
+}
 export function moneyText(n: number, currency = 'ZAR') { return new Intl.NumberFormat('en-ZA', { style: 'currency', currency }).format(n / 100); }
 export const commandSchema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('client'), client: clientSchema }),
@@ -72,7 +80,7 @@ export const commandSchema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('draft'), id: z.string().uuid().optional(), draft: draftSchema }),
     z.object({ type: z.literal('duplicate'), id: z.string().uuid() }),
     z.object({ type: z.literal('deleteDraft'), id: z.string().uuid() }),
-    z.object({ type: z.literal('issue'), id: z.string().uuid() }),
+    z.object({ type: z.literal('issue'), id: z.string().uuid(), details: z.object({ address: text(800).min(1, 'Enter your billing address.'), bankDetails: text(1200).min(1, 'Enter banking details or payment instructions.'), taxNumber: text(80) }).optional() }),
     z.object({ type: z.literal('sent'), id: z.string().uuid() }),
     z.object({ type: z.literal('payment'), id: z.string().uuid(), date, amount: money.refine(v => v > 0), reference: text(200) }),
     z.object({ type: z.literal('voidPayment'), id: z.string().uuid(), paymentId: z.string().uuid(), reason: text(300).min(1) }),
@@ -142,15 +150,18 @@ export function applyCommand(b: Billing, c: z.infer<typeof commandSchema>, now =
         const client = b.clients.find(x => x.id === i.clientId);
         if (!client)
             throw Error('Client not found.');
-        if (!b.settings.address || !b.settings.bankDetails)
-            throw Error('Add your billing address and banking details in Settings first.');
-        if (i.taxRate > 0 && !b.settings.taxNumber)
+        const settings = { ...b.settings, ...c.details };
+        if (!settings.address.trim())
+            throw Error('Enter your billing address below before issuing.');
+        if (!settings.bankDetails.trim())
+            throw Error('Enter banking details or payment instructions below before issuing.');
+        if (i.taxRate > 0 && !settings.taxNumber.trim())
             throw Error('Add your tax registration number before charging tax.');
         const number = b.settings.prefix + String(b.settings.nextNumber).padStart(5, '0');
         if (b.invoices.some(x => x.number === number))
             throw Error('Invoice number already exists. Change the next number in Settings.');
         i.number = number;
-        b.settings.nextNumber++;
+        b.settings = { ...settings, nextNumber: settings.nextNumber + 1 };
         i.client = structuredClone(client);
         i.studio = structuredClone(b.settings);
         i.issuedAt = now;
