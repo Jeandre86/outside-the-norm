@@ -1,1 +1,2 @@
-export {default,dynamic} from '../studio/page';
+export {default} from '../studio/page';
+export const dynamic = 'force-dynamic';

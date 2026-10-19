@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:workers';
+
 import type { Settings } from './billing';
 type MailEnv = {
     GMAIL_CLIENT_ID?: string;
@@ -7,7 +7,7 @@ type MailEnv = {
     GMAIL_SENDER_EMAIL?: string;
     RESEND_API_KEY?: string;
 };
-function config() { return env as unknown as MailEnv; }
+function config() { return process.env as MailEnv; }
 export function mailStatus() { const e = config(); return { gmail: !!(e.GMAIL_CLIENT_ID && e.GMAIL_CLIENT_SECRET && e.GMAIL_REFRESH_TOKEN && e.GMAIL_SENDER_EMAIL), gmailSender: e.GMAIL_SENDER_EMAIL || '', resend: !!e.RESEND_API_KEY }; }
 export function base64(bytes: Uint8Array) { let s = ''; for (let n = 0; n < bytes.length; n += 8192)
     s += String.fromCharCode(...bytes.subarray(n, n + 8192)); return btoa(s); }

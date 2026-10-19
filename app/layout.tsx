@@ -1,2 +1,3 @@
+export const dynamic = 'force-dynamic';
 import SiteMotion from "./site-motion";
 import type {Metadata, Viewport} from "next";import "./globals.css";export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover"};export const metadata:Metadata={title:"Outside the Norm — Designs that last",description:"Brand identity, logo design, and website and app design by Outside the Norm.",icons:{icon:"/favicon-slash.svg"}};export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body>{children}<SiteMotion/></body></html>}

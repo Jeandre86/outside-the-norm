@@ -1,5 +1,10 @@
-import {isEditor} from '@/lib/editor-auth';
-import {chatGPTSignInPath,chatGPTSignOutPath,getChatGPTUser} from '@/app/chatgpt-auth';
+import {isEditor,currentUser} from '@/lib/editor-auth';
 import AdminPanel from './admin-panel';
 export const dynamic='force-dynamic';
-export default async function Studio(){const user=await getChatGPTUser();const allowed=await isEditor();if(allowed&&user)return <AdminPanel email={user.email} signOut={chatGPTSignOutPath('/admin')}/>;return <main className="admin-login"><section><a className="wordmark" href="/"><img className="brand-logo" src="/images/otn-stack.svg" alt="Outside the Norm"/></a><p className="eyebrow">PRIVATE WORKSPACE</p><h1>Studio login<span>.</span></h1><p>Sign in to manage clients, invoices, work and stories.</p>{!user?<a className="cta" href={chatGPTSignInPath('/admin')} target="_top">Sign in with ChatGPT</a>:<><p role="alert">This account does not have admin access. Sign in with the Outside the Norm owner account.</p><a className="cta" href={chatGPTSignOutPath('/admin')} target="_top">Sign out and switch account</a></>}<a className="back-link" href="/">← Back to website</a></section></main>}
+export default async function Studio({searchParams}:{searchParams:Promise<{login?:string}>}) {
+  const user=await currentUser();
+  if(user && await isEditor())return <AdminPanel email={user.email!} signOut="/auth/signout"/>;
+  const params=await searchParams;
+  const ready=!!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  return <main className="admin-login"><section><a className="wordmark" href="/"><img className="brand-logo" src="/images/otn-stack.svg" alt="Outside the Norm"/></a><p className="eyebrow">PRIVATE WORKSPACE</p><h1>Studio login<span>.</span></h1><p>Sign in to manage clients, invoices, work and stories.</p>{!ready?<p role="status">Admin setup is in progress. Supabase login needs to be configured.</p>:<form action="/auth/login" method="post"><label>Email<input type="email" name="email" required autoComplete="username"/></label><label>Password<input type="password" name="password" required autoComplete="current-password"/></label>{params.login==='failed'&&<p role="alert">Sign-in failed. Check your email and password and confirm your account has admin access.</p>}<button className="cta" type="submit">Sign in</button></form>}<a className="back-link" href="/">← Back to website</a></section></main>;
+}

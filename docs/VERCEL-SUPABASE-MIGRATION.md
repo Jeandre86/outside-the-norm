@@ -56,5 +56,21 @@ and enquiry tables plus an atomic revision-checked save function. It has been ap
 and stale-revision rejection; test data was rolled back. Grants and RLS checks
 confirmed anon/authenticated cannot read/write these tables or execute the save
 function. Security advisors report only informational RLS-without-policy notices,
-intentional for server-only access. Storage bucket creation and application
-adapters remain to be implemented.
+intentional for server-only access. Application adapters are implemented. Storage bucket creation, live-data import and owner account setup remain pending.
+
+## Vercel build configuration
+
+The migration branch uses standard Next.js, with `npm run build` invoking
+`next build --webpack` and output directory `.next`. `vercel.json` sets the
+framework and build settings. The previous Vinext build produced Cloudflare
+output, which cannot satisfy Vercel's Next.js routes-manifest requirement.
+
+Vercel must deploy `migrate/vercel-supabase` to use this configuration until the
+migration is ready to merge. Repository root contains package.json, so leave
+Root Directory at the repository root. Set the values from `.env.example` in
+Vercel's environment settings; the Supabase secret must never have a
+NEXT_PUBLIC prefix. Redeploy after changing environment settings.
+
+Do not switch the live site to this deployment until the data import and owner
+login are verified. Build success does not establish that data or images have
+been migrated.
