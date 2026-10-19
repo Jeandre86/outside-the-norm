@@ -80,7 +80,7 @@ export const commandSchema = z.discriminatedUnion('type', [
     z.object({ type: z.literal('draft'), id: z.string().uuid().optional(), draft: draftSchema }),
     z.object({ type: z.literal('duplicate'), id: z.string().uuid() }),
     z.object({ type: z.literal('deleteDraft'), id: z.string().uuid() }),
-    z.object({ type: z.literal('issue'), id: z.string().uuid(), details: z.object({ address: text(800).min(1, 'Enter your billing address.'), bankDetails: text(1200).min(1, 'Enter banking details or payment instructions.'), taxNumber: text(80) }).optional() }),
+    z.object({ type: z.literal('issue'), id: z.string().uuid(), draft: draftSchema.optional(), details: z.object({ address: text(800).min(1, 'Enter your billing address.'), bankDetails: text(1200).min(1, 'Enter banking details or payment instructions.'), taxNumber: text(80) }).optional() }),
     z.object({ type: z.literal('reopen'), id: z.string().uuid(), reason: text(300).min(1) }),
     z.object({ type: z.literal('unpaid'), id: z.string().uuid(), reason: text(300).min(1) }),
     z.object({ type: z.literal('sent'), id: z.string().uuid() }),
@@ -149,7 +149,8 @@ export function applyCommand(b: Billing, c: z.infer<typeof commandSchema>, now =
     if (c.type === 'issue') {
         if (i.issuedAt)
             throw Error('Invoice is already issued.');
-        const client = b.clients.find(x => x.id === i.clientId);
+        const draft = c.draft || i;
+        const client = b.clients.find(x => x.id === draft.clientId);
         if (!client)
             throw Error('Client not found.');
         const settings = { ...b.settings, ...c.details };
@@ -157,11 +158,12 @@ export function applyCommand(b: Billing, c: z.infer<typeof commandSchema>, now =
             throw Error('Enter your billing address below before issuing.');
         if (!settings.bankDetails.trim())
             throw Error('Enter banking details or payment instructions below before issuing.');
-        if (i.taxRate > 0 && !settings.taxNumber.trim())
+        if (draft.taxRate > 0 && !settings.taxNumber.trim())
             throw Error('Add your tax registration number before charging tax.');
         const number = b.settings.prefix + String(b.settings.nextNumber).padStart(5, '0');
         if (b.invoices.some(x => x.number === number))
             throw Error('Invoice number already exists. Change the next number in Settings.');
+        if (c.draft) { Object.assign(i, c.draft); log(i, 'Draft saved before issuing'); }
         i.number = number;
         b.settings = { ...settings, nextNumber: settings.nextNumber + 1 };
         i.client = structuredClone(client);

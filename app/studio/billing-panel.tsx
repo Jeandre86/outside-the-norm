@@ -35,6 +35,7 @@ export default function BillingPanel({ tab, onDirtyChange }: {
     onDirtyChange: (dirty: boolean) => void;
 }) {
     const [b, setB] = useState<Billing>(newBilling), [rev, setRev] = useState(0), [mail, setMail] = useState<Mail>({ gmail: false, resend: false, gmailSender: '' }), [ready, setReady] = useState(false), [busy, setBusy] = useState(false), [notice, setNotice] = useState('Loading studio records…');
+    const [draftEdit, setDraftEdit] = useState<{ id: string | undefined; draft: Draft } | null>(null);
     const [issueOpen, setIssueOpen] = useState(false), [actionError, setActionError] = useState('');
     const [client, setClient] = useState<Client | null>(null), [selected, setSelected] = useState<string | null>(null), [creating, setCreating] = useState(false), [preview, setPreview] = useState(false), [emailOpen, setEmailOpen] = useState(false), [search, setSearch] = useState(''), [filter, setFilter] = useState('All'), [dirty, setDirty] = useState(false);
     async function load() {
@@ -154,7 +155,7 @@ export default function BillingPanel({ tab, onDirtyChange }: {
                         setPreview(false);
                         setEmailOpen(false);
                     }
-                }}>← All invoices</Button><span>{invoice?.number || 'New draft'} {invoice && <span className="billing-badge">{status(invoice)}</span>}</span></div>{(!invoice?.issuedAt) ? <DraftEditor key={(invoice?.id || 'new') + '-' + rev} invoice={invoice} billing={b} dirty={() => setDirty(true)} onSave={async (draft) => {
+                }}>← All invoices</Button><span>{invoice?.number || 'New draft'} {invoice && <span className="billing-badge">{status(invoice)}</span>}</span></div>{(!invoice?.issuedAt) ? <DraftEditor key={(invoice?.id || 'new') + '-' + rev} invoice={invoice} billing={b} dirty={draft => { setDraftEdit({ id: invoice?.id, draft }); setDirty(true); }} onSave={async (draft) => {
                         const d = await act({ type: 'draft', id: invoice?.id, draft });
                         if (d?.selectedId) {
                             setSelected(d.selectedId);
@@ -164,14 +165,14 @@ export default function BillingPanel({ tab, onDirtyChange }: {
  {invoice && <><div className="billing-toolbar"><Button variant="outline" disabled={dirty} onClick={() => setPreview(!preview)}>{preview ? 'Close preview' : 'Preview PDF'}</Button><a className="billing-button" aria-disabled={dirty} onClick={e => {
                         if (dirty)
                             e.preventDefault();
-                    }} href={'/api/billing/pdf?id=' + invoice.id + '&download=1'}>Download PDF</a>{!invoice.issuedAt && <Button type="button" disabled={dirty || busy} aria-expanded={issueOpen} aria-controls="issue-invoice-panel" onClick={() => { setIssueOpen(!issueOpen); setActionError(''); }}>Issue invoice</Button>}<Button variant="outline" disabled={dirty} onClick={async () => {
+                    }} href={'/api/billing/pdf?id=' + invoice.id + '&download=1'}>Download PDF</a>{!invoice.issuedAt && <Button type="button" disabled={busy} aria-expanded={issueOpen} aria-controls="issue-invoice-panel" onClick={() => { setIssueOpen(!issueOpen); setActionError(''); }}>Issue invoice</Button>}<Button variant="outline" disabled={dirty} onClick={async () => {
                         const d = await act({ type: 'duplicate', id: invoice.id });
                         if (d?.selectedId)
                             chooseInvoice(d.selectedId);
                     }}>Duplicate</Button>{!invoice.issuedAt && <Button variant="outline" onClick={async () => {
                             if (confirm('Delete this draft?') && await act({ type: 'deleteDraft', id: invoice.id }))
                                 setSelected(null);
-                        }}>Delete draft</Button>}</div>{dirty && <p>Save your changes before previewing, downloading or issuing.</p>}{!invoice.issuedAt && issueOpen && <IssueInvoiceForm key={invoice.id + '-issue'} invoice={invoice} settings={b.settings} busy={busy} dirty={dirty} error={actionError} onCancel={() => setIssueOpen(false)} onIssue={async (details) => { const result = await act({ type: 'issue', id: invoice.id, details }); if (result) {
+                        }}>Delete draft</Button>}</div>{dirty && <p>Save your changes before previewing or downloading. Confirming issue also saves your draft changes.</p>}{!invoice.issuedAt && issueOpen && <IssueInvoiceForm key={invoice.id + '-issue'} invoice={dirty && draftEdit?.id === invoice.id ? { ...invoice, ...draftEdit.draft } : invoice} settings={b.settings} busy={busy} dirty={dirty} error={actionError} onCancel={() => setIssueOpen(false)} onIssue={async (details) => { const result = await act({ type: 'issue', id: invoice.id, details, ...(dirty && draftEdit?.id === invoice.id ? { draft: draftEdit.draft } : {}) }); if (result) {
                     setIssueOpen(false);
                     setPreview(true);
                 } }}/>}{preview && <iframe key={rev} className="billing-pdf" title="Invoice PDF preview" src={'/api/billing/pdf?id=' + invoice.id}/>}
@@ -227,11 +228,11 @@ export default function BillingPanel({ tab, onDirtyChange }: {
 function DraftEditor({ invoice, billing, dirty, onSave }: {
     invoice?: Invoice;
     billing: Billing;
-    dirty: () => void;
+    dirty: (draft: Draft) => void;
     onSave: (d: Draft) => Promise<void>;
 }) {
     const [d, setD] = useState<Draft>(invoice || { clientId: billing.clients[0]?.id || '', date: today(), dueDate: datePlus(billing.settings.termsDays), reference: '', currency: billing.settings.currency, items: [{ description: '', quantity: 1, rate: 0, discount: 0 }], taxRate: billing.settings.taxRate, notes: '', terms: billing.settings.terms });
-    const update = (patch: Partial<Draft>) => { setD({ ...d, ...patch }); dirty(); };
+    const update = (patch: Partial<Draft>) => { const next = { ...d, ...patch }; setD(next); dirty(next); };
     const t = totals({ ...d, payments: [] });
     return <form className="billing-card" onSubmit={e => { e.preventDefault(); void onSave(d); }}><h2>{invoice ? 'Edit draft' : 'New invoice'}</h2><div className="billing-fields"><label>Client<select required value={d.clientId} onChange={e => update({ clientId: e.target.value })}>{billing.clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label><Field label="Invoice date" value={d.date} type="date" required onChange={date => update({ date })}/><Field label="Due date" value={d.dueDate} type="date" required onChange={dueDate => update({ dueDate })}/><Field label="Project / reference" value={d.reference} onChange={reference => update({ reference })}/><label>Currency<select value={d.currency} onChange={e => update({ currency: e.target.value as Draft['currency'] })}>{['ZAR', 'USD', 'GBP', 'EUR'].map(c => <option key={c}>{c}</option>)}</select></label><Field label="Tax (%) — optional" type="number" value={d.taxRate / 100} onChange={v => update({ taxRate: Math.round(Number(v) * 100) })}/></div><h3>Services & line items</h3>{d.items.map((item, n) => <div className="billing-line" key={n}><Area label="Description" value={item.description} onChange={v => update({ items: d.items.map((x, j) => j === n ? { ...x, description: v } : x) })}/>{(['quantity', 'rate', 'discount'] as const).map(k => <Field key={k} label={{ quantity: 'Quantity', rate: 'Rate', discount: 'Discount %' }[k]} type="number" value={k === 'quantity' ? item[k] : item[k] / 100} onChange={v => update({ items: d.items.map((x, j) => j === n ? { ...x, [k]: k === 'quantity' ? Number(v) : Math.round(Number(v) * 100) } : x) })}/>)}<button type="button" disabled={d.items.length === 1} onClick={() => update({ items: d.items.filter((_, j) => j !== n) })}>Remove</button></div>)}<div className="billing-toolbar"><Button type="button" variant="outline" onClick={() => update({ items: [...d.items, { description: '', quantity: 1, rate: 0, discount: 0 }] })}>+ Line item</Button><select aria-label="Add service preset" value="" onChange={e => {
             const p = billing.presets.find(p => p.id === e.target.value);
@@ -298,13 +299,13 @@ function IssueInvoiceForm({ invoice, settings, busy, dirty, error, onIssue, onCa
     onCancel: () => void;
 }) {
     const [details, setDetails] = useState({ address: settings.address, bankDetails: settings.bankDetails, taxNumber: settings.taxNumber });
-    return <form id="issue-invoice-panel" className="billing-card issue-invoice-panel" onSubmit={e => { e.preventDefault(); if (!busy && !dirty)
+    return <form id="issue-invoice-panel" className="billing-card issue-invoice-panel" onSubmit={e => { e.preventDefault(); if (!busy)
         void onIssue(details); }}>
  <h3>Issue this invoice</h3><p>Review your billing details. Confirming assigns an invoice number and locks the client details and line items. It does not send an email.</p>
  <div className="billing-fields"><label>Studio billing address<textarea required maxLength={800} value={details.address} onChange={e => setDetails({ ...details, address: e.target.value })}/></label><label>Banking details or payment instructions<textarea required maxLength={1200} value={details.bankDetails} onChange={e => setDetails({ ...details, bankDetails: e.target.value })}/></label>{invoice.taxRate > 0 && <label>Tax registration number<input required maxLength={80} value={details.taxNumber} onChange={e => setDetails({ ...details, taxNumber: e.target.value })}/></label>}</div>
  <p>Total: <strong>{moneyText(totals(invoice).total, invoice.currency)}</strong> · Due {invoice.dueDate}</p><small>These billing details will also be saved in Settings for your next invoice.</small>
- {error && <p className="invoice-action-error" role="alert">{error}</p>}{dirty && <p role="status">Save your draft changes above before confirming.</p>}
- <div className="billing-toolbar"><Button type="submit" disabled={busy || dirty}>{busy ? 'Issuing…' : 'Confirm & issue invoice'}</Button><Button type="button" variant="outline" disabled={busy} onClick={onCancel}>Keep as draft</Button></div>
+ {error && <p className="invoice-action-error" role="alert">{error}</p>}{dirty && <p role="status">Your latest draft changes will be saved together with these billing details when you confirm.</p>}
+ <div className="billing-toolbar"><Button type="submit" disabled={busy}>{busy ? 'Issuing…' : 'Confirm & issue invoice'}</Button><Button type="button" variant="outline" disabled={busy} onClick={onCancel}>Keep as draft</Button></div>
  </form>;
 }
 

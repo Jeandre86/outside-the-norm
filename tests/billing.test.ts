@@ -31,3 +31,9 @@ applyCommand(statusBilling,{type:'unpaid',id:invId,reason:'Payment entered in er
 applyCommand(statusBilling,{type:'sent',id:invId});assert.equal(status(corrected),'Sent');assert.throws(()=>applyCommand(statusBilling,{type:'reopen',id:invId,reason:'Again'}),/Only cancelled/);
 assert.equal(commandSchema.safeParse({type:'unpaid',id:invId,reason:''}).success,false);
 console.log('PASS: reopen retains invoice number; paid/unpaid corrections preserve payment history, restore balance and validate reasons.');
+const issueBilling=structuredClone(b);const issueId=applyCommand(issueBilling,{type:'draft',draft})!;const issueDraft=issueBilling.invoices[0];
+const edited={...draft,reference:'Latest unsaved changes',items:[{description:'Updated service',quantity:3,rate:12345,discount:0}]};
+const combined=commandSchema.parse({type:'issue',id:issueId,draft:edited,details:{address:'Updated address',bankDetails:'Updated payment instructions',taxNumber:'TEST'}});
+applyCommand(issueBilling,combined);assert.equal(issueDraft.reference,edited.reference);assert.equal(totals(issueDraft).subtotal,37035);assert.equal(issueDraft.studio?.address,'Updated address');assert.ok(issueDraft.issuedAt);assert.equal(issueDraft.history.at(-2)?.message,'Draft saved before issuing');
+assert.equal(commandSchema.safeParse({type:'issue',id:issueId,draft:{...edited,items:[]}}).success,false);
+console.log('PASS: confirming issue validates and saves latest draft and billing details together.');
