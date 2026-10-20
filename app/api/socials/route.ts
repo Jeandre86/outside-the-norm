@@ -1,0 +1,7 @@
+import {z} from 'zod';
+import {socialsSchema} from '@/lib/socials';
+import {readSocials} from '@/lib/social-storage';
+import {database} from '@/lib/storage';
+import {isEditor,sameOrigin} from '@/lib/editor-auth';
+export async function GET(){if(!await isEditor())return new Response(null,{status:403});try{return Response.json(await readSocials(),{headers:{'Cache-Control':'private, no-store'}});}catch{return Response.json({error:'Unable to load social media settings.'},{status:503});}}
+export async function PUT(r:Request){if(!sameOrigin(r)||!await isEditor())return new Response(null,{status:403});try{const body=await r.text();if(body.length>12000)return new Response(null,{status:413});const {socials,revision}=z.object({socials:socialsSchema,revision:z.number().int().min(0)}).parse(JSON.parse(body));const data=JSON.stringify(socials),db=database();const result=revision===0?await db.prepare('INSERT OR IGNORE INTO content (id,data,revision) VALUES (?,?,1)').bind('socials',data).run():await db.prepare('UPDATE content SET data=?,revision=revision+1 WHERE id=? AND revision=?').bind(data,'socials',revision).run();if(!result.meta.changes)return Response.json({error:'Settings changed in another window. Reload before saving.'},{status:409});return Response.json({revision:revision+1});}catch(e){return Response.json({error:e instanceof z.ZodError?'Use valid profile URLs and add a URL for every enabled icon.':'Unable to save social media settings.'},{status:e instanceof z.ZodError||e instanceof SyntaxError?400:503});}}
