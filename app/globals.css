@@ -473,3 +473,8 @@ footer .wordmark .brand-logo-mark{width:96px;height:auto;max-height:none;display
 .admin-login{background-color:#e6e7e2;background-image:linear-gradient(115deg,rgba(11,20,14,.12),rgba(11,20,14,.38)),url('/images/studio-hero.png');background-size:cover;background-position:center;min-height:100svh;padding:clamp(24px,5vw,72px)}
 .admin-login>section{box-shadow:0 24px 80px rgba(11,20,14,.2);border-top:3px solid #e50914}
 @media(min-width:1000px){.admin-login{justify-items:start;padding-left:clamp(48px,9vw,160px);background-position:center right}}
+
+/* Supplied portrait work artwork: retain the complete composition. */
+.project-cover.portrait-work-cover{aspect-ratio:4/5;height:auto;background:#0b140e}
+.project-cover.portrait-work-cover img{width:100%;height:100%;object-fit:contain;filter:none;padding:0;transform:none}
+.project-cover.portrait-work-cover:hover img{transform:none}

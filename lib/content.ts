@@ -30,12 +30,14 @@ export function moveProject(projects:Project[],id:string,target:number){
  const [project]=rows.splice(from,1);rows.splice(target,0,project);return rows.map((p,index)=>({...p,sortOrder:index}));
 }
 
-export const transplantAquaticsCover="/images/transplant-aquatics-work-cover.png";
-export const karosCover="/images/karos-card-showcase.png";
-export const klevaCover="/images/kleva-showcase-v2.png";
-export const wggCover="/images/wgg-brand-showcase.png";
+export const transplantAquaticsCover="/images/transplant-aquatics-work-2026.png";
+export const karosCover="/images/karos-work-2026.png";
+export const klevaCover="/images/kleva-work-2026.png";
+export const wggCover="/images/wgg-work-2026.png";
 export function withProjectCover(project:Project):Project{
- if(project.id==="transplant-sports"&&(!project.image||project.image==="/images/transplant-sports-logo.png"||project.image==="/images/transplant-sports-showcase.png"))return {...project,image:"/images/transplant-sports-showcase-v2.png",alt:"Transplant Sports logo card and desktop monitor; presentation mockup"};
+ const refreshed:Record<string,string>={"/images/karos-card-showcase.png":"/images/karos-work-2026.png","/images/kleva-showcase-v2.png":"/images/kleva-work-2026.png","/images/transplant-sports-showcase-v2.png":"/images/transplant-sports-work-2026.png","/images/transplant-aquatics-work-cover.png":"/images/transplant-aquatics-work-2026.png","/images/wgg-brand-showcase.png":"/images/wgg-work-2026.png"};
+ if(refreshed[project.image])project={...project,image:refreshed[project.image]};
+ if(project.id==="transplant-sports"&&(!project.image||project.image==="/images/transplant-sports-logo.png"||project.image==="/images/transplant-sports-showcase.png"))return {...project,image:"/images/transplant-sports-work-2026.png",alt:"Transplant Sports logo card and desktop monitor; presentation mockup"};
  if(project.id==="kleva"&&(!project.image||project.image==="/images/kleva-showcase.png"))return {...project,image:klevaCover,alt:"Kleva logo card and app dashboard on a smartphone in a dark studio; presentation mockup"};
  if(project.id==="world-greatest-game"&&!project.image)return {...project,image:wggCover,alt:"World’s Greatest Game brand identity presented on a white card beside blue, yellow and orange cards; presentation mockup"};
  if(project.id==="karos"&&(!project.image||project.image==="/images/karos-logo-cover.png"))return {...project,service:"Logo design",image:karosCover,alt:"Karos Avontuurplaas logo presented on a forest-green card with a mountain backdrop; presentation mockup"};
