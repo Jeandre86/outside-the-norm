@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
+import IncomeDashboard from './income-dashboard';
 import { newBilling, totals, status, today, moneyText, type Billing, type Client, type Draft, type Invoice, type Settings } from '@/lib/billing';
 import { Button } from '@/components/ui/button';
 export type BillingTab = 'dashboard' | 'clients' | 'invoices' | 'services' | 'settings';
@@ -128,12 +129,11 @@ export default function BillingPanel({ tab, onDirtyChange }: {
             setEmailOpen(false);
         }
     };
-    const active = b.invoices.filter(i => i.issuedAt && !i.cancelledAt);
     return <section className="billing"><div className={"billing-notice" + (actionError ? " billing-notice-error" : "")} role={actionError ? "alert" : "status"}>{notice || 'Records up to date.'}{dirty && ' Unsaved changes.'}<button type="button" disabled={busy} onClick={() => {
             if (leave())
                 void load();
         }}>Reload</button></div>{ready && <fieldset disabled={busy} className="billing-fieldset">
- {tab === 'dashboard' && <><p className="billing-intro">Your studio, at a glance.</p><div className="billing-metrics">{(['ZAR', 'USD', 'GBP', 'EUR'] as const).filter(c => c === b.settings.currency || active.some(i => i.currency === c)).map(c => { const rows = active.filter(i => i.currency === c); return <div className="billing-metric" key={c}><small>Outstanding · {c}</small><strong>{moneyText(rows.reduce((n, i) => n + totals(i).balance, 0), c)}</strong><span>{rows.filter(i => status(i) === 'Overdue').length} overdue invoices</span><small>Recorded payments: {moneyText(rows.reduce((n, i) => n + totals(i).paid, 0), c)}</small></div>; })}<div className="billing-metric"><small>Clients</small><strong>{b.clients.length}</strong><span>{b.invoices.filter(i => !i.issuedAt).length} draft invoices</span></div></div><h2>Needs attention</h2>{b.invoices.filter(i => status(i) === 'Overdue').length === 0 ? <div className="billing-empty">No overdue invoices.</div> : <div className="billing-table-wrap"><table><thead><tr><th>Invoice</th><th>Client</th><th>Due</th><th>Outstanding</th></tr></thead><tbody>{b.invoices.filter(i => status(i) === 'Overdue').map(i => <tr key={i.id}><td>{i.number}</td><td>{i.client?.name}</td><td>{i.dueDate}</td><td>{moneyText(totals(i).balance, i.currency)}</td></tr>)}</tbody></table></div>}<div className="billing-tip">{mail[b.settings.emailProvider] ? 'Email credentials are configured. Confirm your sender details in Settings.' : 'Email is not connected yet. PDF downloads and manual payment tracking are available.'}</div><Button variant="outline" onClick={() => { const a = document.createElement('a'); const url = URL.createObjectURL(new Blob([JSON.stringify(b, null, 2)], { type: 'application/json' })); a.href = url; a.download = 'outside-the-norm-billing-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }}>Export billing backup</Button></>}
+ {tab === 'dashboard' && <><IncomeDashboard billing={b} /><div className="billing-tip">{mail[b.settings.emailProvider] ? 'Email credentials are configured. Confirm your sender details in Settings.' : 'Email is not connected yet. PDF downloads and manual payment tracking are available.'}</div><Button variant="outline" onClick={() => { const a = document.createElement('a'); const url = URL.createObjectURL(new Blob([JSON.stringify(b, null, 2)], { type: 'application/json' })); a.href = url; a.download = 'outside-the-norm-billing-' + today() + '.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); }}>Export billing backup</Button></>}
  {tab === 'clients' && (client ? <form className="billing-card" onSubmit={async (e) => {
                     e.preventDefault();
                     if (await act({ type: 'client', client }))
