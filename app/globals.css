@@ -488,3 +488,6 @@ footer .wordmark .brand-logo-mark{width:96px;height:auto;max-height:none;display
 /* Centre page details inside the right-hand workspace. */
 .admin-content.studio > :not(.admin-topbar){width:100%;max-width:1250px;margin-left:auto;margin-right:auto}
 .admin-content .billing{margin-left:auto;margin-right:auto}
+
+.admin-account-dropdown{background:#1d2321;color:#edf0ed;border:1px solid #3c4640;border-radius:12px;padding:20px;width:280px;max-width:calc(100vw - 32px);box-shadow:0 16px 40px #0006;z-index:60;font-size:13px}
+.admin-account-dropdown small{color:#a5aeaa}.admin-account-dropdown p{overflow-wrap:anywhere;margin:6px 0 18px;font-weight:600}.admin-account-dropdown a,.admin-account-dropdown button{display:block;width:100%;padding:12px;text-align:left;border-radius:6px}.admin-account-dropdown a:hover,.admin-account-dropdown button:hover{background:#303a34}.admin-account-dropdown form{border-top:1px solid #3c4640;margin-top:6px;padding-top:6px}.admin-account-dropdown .admin-signout{color:#ff627a}.admin-account-dropdown :focus-visible{outline:2px solid #ff627a;outline-offset:2px}.admin-topbar-actions button.admin-avatar{cursor:pointer;flex-shrink:0}
